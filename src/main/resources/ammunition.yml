@@ -1,0 +1,21 @@
+ammunitionTypes:
+  9mm:
+    itemType: GOLD_NUGGET
+    itemName: "&c9mm"
+    itemLore: "&7The mostly widely used pistol round in the world.|&7The 9mm is great for the range or self defense."
+  7,62:
+    itemType: FLINT
+    itemName: "&c7.62 NATO"
+    itemLore: "&7A rimless bottlenecked rifle cartridge developed in the|&71950s as a standard for small arms among NATO countries."
+  flare:
+    itemType: SUGAR
+    itemName: "&cFlare"
+    itemLore: "&7A type of pyrotechnic that produces a brilliant light or|&7intense heat without an explosion."
+  rocket:
+    itemType: FEATHER
+    itemName: "&cRocket"
+    itemLore: "&7A shoulder-fired anti-tank weapon system that fires rockets|&7equipped with an explosive warhead."
+  50_bmg:
+    itemType: SLIME_BALL
+    itemName: "&c.50 BMG"
+    itemLore: "&7The .50 BMG cartridge is also used in long-range target|&7and anti-materiel rifles, as well as other .50-caliber machine guns."

@@ -1,0 +1,9 @@
+name: KILLSHOT
+version: 1.0-SNAPSHOT
+description: An advanced lightweight plugin with gun-mechanics that enhances your gaming experience and provides you with a unique survival mode.
+main: me.nosmakos.killshot.KillShot
+api-version: 1.13
+commands:
+  killshot:
+    description: To get the list of all the available commands and permissions.
+    aliases: [ks]
