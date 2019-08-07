@@ -5,7 +5,6 @@ import me.nosmakos.killshot.weapon.Weapon;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -52,12 +51,12 @@ public class Flare extends BukkitRunnable {
             entityNear = true;
         }
         if (loc.getBlock().getType().isOccluding() || entityNear || this.distance < 0) {
-            for (Entity entity : loc.getWorld().getNearbyEntities(loc, 0.5D, 0.5D, 0.5D)) {
-                if ((entity instanceof LivingEntity)) {
-                    ((LivingEntity) entity).damage(weapon.getProjectileDamage(), player);
-                    entity.setFireTicks(100);
-                }
-            }
+
+            loc.getWorld().getNearbyEntities(loc, 0.5D, 0.5D, 0.5D).stream().filter(entity -> (entity instanceof LivingEntity))
+                    .forEach(entity -> {
+                        ((LivingEntity) entity).damage(weapon.getProjectileDamage(), player);
+                        entity.setFireTicks(100);
+                    });
             cancel();
         }
     }

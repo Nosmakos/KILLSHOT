@@ -1,10 +1,9 @@
 package me.nosmakos.killshot.projectile.types;
 
+import me.nosmakos.killshot.utilities.XSound;
 import me.nosmakos.killshot.weapon.Weapon;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -47,12 +46,11 @@ public class Rocket extends BukkitRunnable {
         }
         if (loc.getBlock().getType().isOccluding() || entityNear || this.distance < 0) {
             loc.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, loc, 0);
-            player.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 8.0F, 0.7F);
-            for (Entity entity : loc.getWorld().getNearbyEntities(loc, 7.0D, 7.0D, 7.0D)) {
-                if ((entity instanceof LivingEntity)) {
-                    ((LivingEntity) entity).damage(weapon.getProjectileDamage(), player);
-                }
-            }
+            player.getWorld().playSound(loc, XSound.ENTITY_GENERIC_EXPLODE.parseSound(), 8.0F, 0.7F);
+
+            loc.getWorld().getNearbyEntities(loc, 7.0D, 7.0D, 7.0D).stream().filter(entity -> (entity instanceof LivingEntity))
+                    .forEach(entity -> ((LivingEntity) entity).damage(weapon.getProjectileDamage(), player)
+            );
             cancel();
         }
     }
