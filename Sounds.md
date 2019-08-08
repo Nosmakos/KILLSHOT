@@ -1,4 +1,4 @@
-Use the left ones, the right ones inside parentheses are the old version sound types. I am having this in order to find the sound you are trying to find.
+Use the left ones. I am having this in order to find the sound you are trying to find.
 
 If a sound does not exist in the list, that means it haven't changed between those versions.
 
