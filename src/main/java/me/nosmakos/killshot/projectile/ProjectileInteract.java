@@ -1,6 +1,7 @@
 package me.nosmakos.killshot.projectile;
 
 import me.nosmakos.killshot.KillShot;
+import me.nosmakos.killshot.configuration.WeaponData;
 import me.nosmakos.killshot.itemnbt.NBTItem;
 import me.nosmakos.killshot.utilities.KUtil;
 import me.nosmakos.killshot.utilities.Lang;
@@ -19,9 +20,13 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ProjectileInteract implements Listener {
 
@@ -62,6 +67,18 @@ public class ProjectileInteract implements Listener {
             int random = KUtil.randomInt(1, 10);
             event.setDamage(random >= 9 ? weapon.getProjectileDamage() + weapon.getProjectileCriticalDamage() : weapon.getProjectileDamage());
 
+            WeaponData data = WeaponData.getConfig(plugin, bullets.get(s.getEntityId()));
+
+            if (data.get("abilities.effectList") != null && event.getEntity() instanceof Player) {
+                List<String> effectList = data.getStringList("abilities.effectList");
+
+                effectList.stream().map(potionEffect -> potionEffect.split("-"))
+                        .forEach(effect -> ((Player) event.getEntity()).addPotionEffect(new PotionEffect(
+                                Objects.requireNonNull(PotionEffectType.getByName(effect[0])),
+                                20 * Integer.parseInt(effect[1]),
+                                Integer.parseInt(effect[2]))
+                        ));
+            }
             Bukkit.getScheduler().runTaskLater(plugin, () -> ((LivingEntity) event.getEntity()).setNoDamageTicks(0), 1);
             bullets.remove(event.getEntity().getEntityId());
         }
