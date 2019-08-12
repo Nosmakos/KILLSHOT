@@ -14,11 +14,14 @@ import me.nosmakos.killshot.weapon.WeaponManagement;
 import me.nosmakos.killshot.weapon.listeners.WeaponHolograms;
 import me.nosmakos.killshot.weapon.listeners.WeaponInteract;
 import me.nosmakos.killshot.weapon.listeners.WeaponScopeInteract;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -33,6 +36,9 @@ import java.util.Objects;
 
 public class KillShot extends JavaPlugin {
 
+    /*
+       Arrows are highly recommended for ordinary projectiles.
+    */
     private File langFile, ammunitionFile;
     private FileConfiguration langConfig, ammunitionConfig;
 
@@ -145,6 +151,10 @@ public class KillShot extends JavaPlugin {
         }
     }
 
+    public void sendActionBar(Player player, String string) {
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(string));
+    }
+
     private void registerWeaponCategories() {
         weapons.clear();
 
@@ -177,14 +187,16 @@ public class KillShot extends JavaPlugin {
                         data.getString("reload.reloadDefaultSound"),
                         data.getString("reload.reloadCustomSound")
                 );
+                createdGun.setItemDropHologram(data.getBoolean("information.itemDropHologram"));
                 createdGun.setProjectileCriticalDamage(data.getDouble("abilities.projectileCriticalDamage"));
-                createdGun.setWeaponItemDropHologram(data.getBoolean("information.itemDropHologram"));
+                createdGun.setProjectileHeadShotDamage(data.getDouble("abilities.projectileHeadShotDamage"));
 
                 if (data.getString("scope") != null) {
                     createdGun.setScopeLevel(data.getInt("scope.weaponScopeLevel"));
                     createdGun.setScopeData(data.getInt("scope.weaponScopeData"));
                     createdGun.setScopeDefaultSound(data.getString("scope.weaponScopeDefaultSound"));
                 }
+                createdGun.setReloadActionBarMessage(data.getString("reload.reloadActionBarMessage"));
                 weapons.put(gun, createdGun);
             }
 
