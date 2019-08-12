@@ -33,9 +33,6 @@ import java.util.Objects;
 
 public class KillShot extends JavaPlugin {
 
-    /*
-       Snowballs are highly recommended for ordinary projectiles.
-    */
     private File langFile, ammunitionFile;
     private FileConfiguration langConfig, ammunitionConfig;
 
