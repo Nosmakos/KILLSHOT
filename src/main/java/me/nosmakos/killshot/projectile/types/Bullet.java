@@ -4,18 +4,23 @@ package me.nosmakos.killshot.projectile.types;
 import me.nosmakos.killshot.weapon.Weapon;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
 import org.bukkit.util.Vector;
 
 public class Bullet {
 
     public Bullet(Player player, Weapon weapon) {
-        Snowball bullet = player.launchProjectile(Snowball.class);
+        Arrow bullet = player.launchProjectile(Arrow.class);
 
         bullet.setVelocity(player.getLocation().getDirection().multiply(weapon.getProjectileSpeed()));
+
         bullet.setSilent(true);
+        bullet.setBounce(false);
+
         bullet.setGravity(false);
+
+        bullet.setShooter(player);
 
         Location loc = player.getEyeLocation();
         Vector dir = loc.getDirection();
