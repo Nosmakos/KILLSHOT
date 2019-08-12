@@ -8,9 +8,7 @@ import me.nosmakos.killshot.utilities.Lang;
 import me.nosmakos.killshot.weapon.Weapon;
 import me.nosmakos.killshot.weapon.WeaponManagement;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -41,7 +39,7 @@ public class ProjectileInteract implements Listener {
 
     @EventHandler
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
-        if ((event.getEntity() instanceof Snowball) && (event.getEntity().getShooter() instanceof Player)) {
+        if ((event.getEntity() instanceof Arrow) && (event.getEntity().getShooter() instanceof Player)) {
             Player player = (Player) event.getEntity().getShooter();
 
             if (!weaponManagement.hasWeapon(player)) return;
@@ -57,18 +55,24 @@ public class ProjectileInteract implements Listener {
 
     @EventHandler
     public void onProjectileEntityDamage(EntityDamageByEntityEvent event) {
-        if ((event.getDamager() != null) && (event.getDamager() instanceof Snowball)) {
-            Snowball s = (Snowball) event.getDamager();
+        if ((event.getEntity() instanceof LivingEntity) && (event.getDamager() instanceof Arrow)) {
+            Arrow s = (Arrow) event.getDamager();
+
+            LivingEntity entity = (LivingEntity) event.getEntity();
+            if ((entity instanceof ItemFrame) || (entity instanceof ArmorStand)) return;
 
             if (!bullets.containsKey(s.getEntityId())) return;
-
             Weapon weapon = weaponManagement.getWeapon(bullets.get(s.getEntityId()));
 
-            int random = KUtil.randomInt(1, 10);
-            event.setDamage(random >= 9 ? weapon.getProjectileDamage() + weapon.getProjectileCriticalDamage() : weapon.getProjectileDamage());
+            double damage = KUtil.randomInt(1, 10) >= 9 ? weapon.getProjectileDamage() + weapon.getProjectileCriticalDamage() : weapon.getProjectileDamage();
+            event.setDamage(weaponManagement.isHeadShot(s.getLocation(), entity.getLocation()) ? damage + weapon.getProjectileHeadShotDamage() : damage);
+
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                entity.setMaximumNoDamageTicks(0);
+                entity.setNoDamageTicks(0);
+            });
 
             WeaponData data = WeaponData.getConfig(plugin, bullets.get(s.getEntityId()));
-
             if (data.get("abilities.effectList") != null && event.getEntity() instanceof Player) {
                 List<String> effectList = data.getStringList("abilities.effectList");
 
@@ -79,7 +83,6 @@ public class ProjectileInteract implements Listener {
                                 Integer.parseInt(effect[2]))
                         ));
             }
-            Bukkit.getScheduler().runTaskLater(plugin, () -> ((LivingEntity) event.getEntity()).setNoDamageTicks(0), 1);
             bullets.remove(event.getEntity().getEntityId());
         }
     }
@@ -98,8 +101,10 @@ public class ProjectileInteract implements Listener {
 
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {
-        if (event.getEntity() instanceof Snowball && !bullets.containsKey(event.getEntity().getEntityId())) return;
-        bullets.remove(event.getEntity().getEntityId());
+        if (event.getEntity() instanceof Arrow && !bullets.containsKey(event.getEntity().getEntityId())) return;
+
+        Bukkit.getScheduler().runTaskLater(plugin, () -> bullets.remove(event.getEntity().getEntityId()), 20);
+        event.getEntity().remove();
     }
 
     @EventHandler
