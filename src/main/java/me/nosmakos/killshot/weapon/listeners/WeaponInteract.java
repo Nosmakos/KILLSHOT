@@ -3,6 +3,7 @@ package me.nosmakos.killshot.weapon.listeners;
 import me.nosmakos.killshot.KillShot;
 import me.nosmakos.killshot.projectile.Projectile;
 import me.nosmakos.killshot.reload.ReloadAmmunition;
+import me.nosmakos.killshot.utilities.KUtil;
 import me.nosmakos.killshot.utilities.Lang;
 import me.nosmakos.killshot.utilities.Permission;
 import me.nosmakos.killshot.utilities.XSound;
@@ -50,9 +51,16 @@ public class WeaponInteract implements Listener {
                     if (WeaponManagement.reloadControl.contains(player.getUniqueId())) return;
                     WeaponManagement.reloadControl.add(player.getUniqueId());
 
+                    if (weapon.isScoped()) {
+                        weaponManagement.unScopeWeapon(player, weapon);
+                    }
                     new ReloadAmmunition(plugin, player, weapon, weaponManagement.getWeaponId(player))
                             .runTaskLater(plugin, 40 + weapon.getReloadAmmoCooldown()
                             );
+
+                    if (weapon.getReloadActionBarMessage() != null) {
+                        plugin.sendActionBar(player, KUtil.colorize(weapon.getReloadActionBarMessage()));
+                    }
                     return;
                 }
                 if (projectileCooldown.contains(player.getUniqueId())) return;

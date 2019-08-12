@@ -10,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -33,6 +32,7 @@ public class WeaponScopeInteract implements Listener {
         event.setCancelled(true);
 
         Player player = event.getPlayer();
+
         if ((event.getHand() != EquipmentSlot.OFF_HAND) && (event.getAction() == Action.LEFT_CLICK_AIR) || (event.getAction() == Action.LEFT_CLICK_BLOCK)) {
             Weapon weapon = weaponManagement.getWeapon(weaponManagement.getCategory(player));
 
@@ -50,15 +50,10 @@ public class WeaponScopeInteract implements Listener {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 250));
 
                 player.getInventory().getItemInMainHand().setDurability((short) weapon.getScopeData());
-
                 return;
             }
             weapon.setScoped(false);
-
-            player.removePotionEffect(PotionEffectType.SLOW);
-            player.removePotionEffect(PotionEffectType.JUMP);
-
-            player.getInventory().getItemInMainHand().setDurability((short) weapon.getItemDurability());
+            weaponManagement.unScopeWeapon(player, weapon);
         }
     }
 
@@ -72,35 +67,14 @@ public class WeaponScopeInteract implements Listener {
 
     @EventHandler
     public void onWeaponHeld(PlayerItemHeldEvent event) {
-        if (!weaponManagement.hasWeapon(event.getPlayer())) return;
+        if (weaponManagement == null || !weaponManagement.hasWeapon(event.getPlayer())) return;
 
         Weapon weapon = weaponManagement.getWeapon(weaponManagement.getCategory(event.getPlayer()));
         if (!weapon.isScoped()) return;
         Player player = event.getPlayer();
 
         weapon.setScoped(false);
-
-        player.removePotionEffect(PotionEffectType.SLOW);
-        player.removePotionEffect(PotionEffectType.JUMP);
-
-        player.getInventory().getItemInMainHand().setDurability((short) weapon.getItemDurability());
-    }
-
-    @EventHandler
-    public void onWeaponDrop(PlayerDropItemEvent event) {
-        if (!weaponManagement.isWeapon(event.getItemDrop().getItemStack())) return;
-        ItemStack itemStack = event.getItemDrop().getItemStack();
-
-        Weapon weapon = weaponManagement.getWeapon(weaponManagement.getCategory(itemStack));
-        if (!weapon.isScoped()) return;
-        Player player = event.getPlayer();
-
-        weapon.setScoped(false);
-
-        player.removePotionEffect(PotionEffectType.SLOW);
-        player.removePotionEffect(PotionEffectType.JUMP);
-
-        itemStack.setDurability((short) weapon.getItemDurability());
+        weaponManagement.unScopeWeapon(player, weapon);
     }
 
     @EventHandler
@@ -112,11 +86,7 @@ public class WeaponScopeInteract implements Listener {
         Player player = event.getPlayer();
 
         weapon.setScoped(false);
-
-        player.removePotionEffect(PotionEffectType.SLOW);
-        player.removePotionEffect(PotionEffectType.JUMP);
-
-        player.getInventory().getItemInMainHand().setDurability((short) weapon.getItemDurability());
+        weaponManagement.unScopeWeapon(player, weapon);
     }
 
     @EventHandler
@@ -127,8 +97,8 @@ public class WeaponScopeInteract implements Listener {
             }
             if (!weaponManagement.isWeapon(item)) continue;
             Weapon weapon = weaponManagement.getWeapon(weaponManagement.getCategory(item));
-            weapon.setScoped(false);
 
+            weapon.setScoped(false);
             item.setDurability((short) weapon.getItemDurability());
         }
     }
