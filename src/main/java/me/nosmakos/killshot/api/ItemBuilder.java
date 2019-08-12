@@ -90,10 +90,14 @@ public class ItemBuilder {
         ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
+            meta.setUnbreakable(true);
+            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+            meta.addItemFlags(ItemFlag.HIDE_DESTROYS);
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             meta.setDisplayName(this.name);
             meta.setLore(this.lore);
         }
+
         item.setItemMeta(meta);
 
         NBTItem nbtItem = new NBTItem(item);
